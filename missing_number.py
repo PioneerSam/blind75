@@ -7,5 +7,17 @@ Given an array nums containing n distinct numbers in the range [0, n], return th
 class Solution:
     def missingNumber(self, nums: List[int]) -> int:
      #O(1) extra space O(n) runtime complexity
+
         n = len(nums)
-        return n*(n+1)//2 - sum(nums)
+
+        # I used the mean to do it
+        total = 0
+        cnt = 0
+        for i in range(0,n,1):
+            total+=nums[i]
+            cnt+=i
+
+        cnt += n
+
+        return cnt - total
+            
