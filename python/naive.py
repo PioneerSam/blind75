@@ -1,62 +1,91 @@
 '''
-Given a reference of a node in a connected undirected graph.
+You are given an absolute path for a Unix-style file system, which always begins with a slash '/'. 
+Your task is to transform this absolute path into its simplified canonical path.
 
-Return a deep copy (clone) of the graph.
+The rules of a Unix-style file system are as follows:
 
-Each node in the graph contains a value (int) and a list (List[Node]) of its neighbors.
+A single period '.' represents the current directory.
+A double period '..' represents the previous/parent directory.
+Multiple consecutive slashes such as '//' and '///' are treated as a single slash '/'.
+Any sequence of periods that does not match the rules above should be treated as a valid directory or file name. For example, '...' and '....' are valid directory or file names.
+The simplified canonical path should follow these rules:
 
-class Node {
-    public int val;
-    public List<Node> neighbors;
-}
- 
-
-Test case format:
-
-For simplicity, each node's value is the same as the node's index (1-indexed). For example, the first node with val == 1, the second node with val == 2, and so on. The graph is represented in the test case using an adjacency list.
-
-An adjacency list is a collection of unordered lists used to represent a finite graph. Each list describes the set of neighbors of a node in the graph.
-
-The given node will always be the first node with val = 1. You must return the copy of the given node as a reference to the cloned graph.
-
+The path must start with a single slash '/'.
+Directories within the path must be separated by exactly one slash '/'.
+The path must not end with a slash '/', unless it is the root directory.
+The path must not have any single or double periods ('.' and '..') used to denote current or parent directories.
+Return the simplified canonical path.
 '''
 
-"""
-"""
-
-class Node:
-    def __init__(self, val = 0, neighbors = None):
-        self.val = val
-        self.neighbors = neighbors if neighbors is not None else []
 
 
-from typing import Optional
 class Solution:
-    def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
-        # edge case
-        if node is None:
-            return None
+    def simplifyPath(self, path: str) -> str:
+        # first lets go through the string and replace all the "//" "///" with "/"
+        # deal with "//"
+        parts = path.split("//")
+        print(parts)
+        accum = ''
+        for part in parts:
+            accum += part + "/"
+        path = accum[0:-1]
+
+        # deal with "///"
+        parts = path.split("///")
+        print(parts)
+        accum = ''
+        for part in parts:
+            accum += part + "/"
+        path = accum[0:-1]
+
+        # then split on "/" and reassemble the strings and return from right to left
+        parts = path.split("/")
+        parts = parts[::-1] # reverse it
+        accum = ''
+        skip_cnt = 0
+        for part in parts:
+            if part == "..":
+                skip_cnt += 1
+            elif part == ".":
+                if skip_cnt > 0:
+                    skip_cnt -= 1
+                    continue
+                continue
+            else:
+                if skip_cnt > 0:
+                    skip_cnt -= 1
+                    continue
+                accum = '/' + part + accum
+
+        accum = accum[1:-1]
+        return accum
+    
+
+
+path = "/home//foo/"
+
+s = Solution()
+print(s.simplifyPath(path))
+
+
         
-        # now the graph might be a circle
-        stack = []
-        stack.append(node)
-        visited = {}
 
-        while stack:
-            cur = stack.pop()
-        
-            if cur not in visited:
-                new_cur = Node(cur.val)
-                visited[cur] = new_cur # create new association
 
-            # add the rest of node's neighbour to stack
-            for neighbor in cur.neighbors:
-                if neighbor not in visited:
-                    new_nei = Node(neighbor.val)
-                    visited[neighbor] = new_nei
-                    stack.append(neighbor)
-                visited[cur].neighbors.append(visited[neighbor])
+                
 
-        return visited[node]
 
         
+            
+           
+
+           
+                
+
+            
+
+        
+
+
+
+
+
