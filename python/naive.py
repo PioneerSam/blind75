@@ -1,91 +1,46 @@
 '''
-You are given an absolute path for a Unix-style file system, which always begins with a slash '/'. 
-Your task is to transform this absolute path into its simplified canonical path.
+You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.
 
-The rules of a Unix-style file system are as follows:
-
-A single period '.' represents the current directory.
-A double period '..' represents the previous/parent directory.
-Multiple consecutive slashes such as '//' and '///' are treated as a single slash '/'.
-Any sequence of periods that does not match the rules above should be treated as a valid directory or file name. For example, '...' and '....' are valid directory or file names.
-The simplified canonical path should follow these rules:
-
-The path must start with a single slash '/'.
-Directories within the path must be separated by exactly one slash '/'.
-The path must not end with a slash '/', unless it is the root directory.
-The path must not have any single or double periods ('.' and '..') used to denote current or parent directories.
-Return the simplified canonical path.
+Return the length of the longest substring containing the same letter you can get after performing the above operations.
 '''
 
 
 
 class Solution:
-    def simplifyPath(self, path: str) -> str:
-        # first lets go through the string and replace all the "//" "///" with "/"
-        # deal with "//"
-        parts = path.split("//")
-        print(parts)
-        accum = ''
-        for part in parts:
-            accum += part + "/"
-        path = accum[0:-1]
+    def characterReplacement(self, s: str, k: int) -> int:
+        # you know what lets take a dp approach
+        # every array of integer records the longest string so far
+        # isnt k is the window size
+        n = len(s)
 
-        # deal with "///"
-        parts = path.split("///")
-        print(parts)
-        accum = ''
-        for part in parts:
-            accum += part + "/"
-        path = accum[0:-1]
-
-        # then split on "/" and reassemble the strings and return from right to left
-        parts = path.split("/")
-        parts = parts[::-1] # reverse it
-        accum = ''
-        skip_cnt = 0
-        for part in parts:
-            if part == "..":
-                skip_cnt += 1
-            elif part == ".":
-                if skip_cnt > 0:
-                    skip_cnt -= 1
-                    continue
-                continue
-            else:
-                if skip_cnt > 0:
-                    skip_cnt -= 1
-                    continue
-                accum = '/' + part + accum
-
-        accum = accum[1:-1]
-        return accum
-    
-
-
-path = "/home//foo/"
-
-s = Solution()
-print(s.simplifyPath(path))
-
-
+        if n <= k:
+            return n
         
 
-
-                
-
-
+        l = 0
+        freq = [0] * 26
+        max_window_size = 0
         
-            
-           
+        for r in range(0,n,1):
+            window_size = r - l + 1
 
-           
-                
+            id_r =  ord(s[r]) - ord("A")
+            freq[id_r] += 1
+            max_freq = max(freq)
+
+            if(r-l+1 - max_freq > k):
+                id_l = ord(s[l]) - ord("A")
+                freq[id_l] -= 1
+                l+=1
+            window_size = r - l + 1
+        
+            if window_size > max_window_size:
+                max_window_size = window_size
+
+        return max_window_size
+
+
+
+
 
             
-
-        
-
-
-
-
-
