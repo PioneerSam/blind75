@@ -1,46 +1,41 @@
 '''
-You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.
+You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise).
 
-Return the length of the longest substring containing the same letter you can get after performing the above operations.
+You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.
 '''
 
 
 
 class Solution:
-    def characterReplacement(self, s: str, k: int) -> int:
-        # you know what lets take a dp approach
-        # every array of integer records the longest string so far
-        # isnt k is the window size
-        n = len(s)
+    def rotate(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        # rows should be columns
+        # first row is the last column and first column in reverse is the first row
 
-        if n <= k:
-            return n
+        # I can mirror across the diagonal and reverse the rows lol
+        # lets mirror it i,j = j,i easy
+        numRows = len(matrix)
+        numCols = len(matrix[0])
+        print("numrows",numRows)
+        print("numcols",numCols)
+        for i in range(numRows):
+            for j in range(i+1,numCols):
+                print("(i,j)",(i,j))
+                temp_ij = matrix[i][j]
+                temp_ji = matrix[j][i]
+
+                # swap 
+                matrix[i][j] = temp_ji
+                # print("pair is (i,j) --> (j,i)",temp_ij,temp_ji)
+                matrix[j][i] = temp_ij
+
+        print(matrix)
+
+        # now reverse each rows
+        for i in range(numRows):
+            matrix[i].reverse()
+
+        return matrix
         
-
-        l = 0
-        freq = [0] * 26
-        max_window_size = 0
-        
-        for r in range(0,n,1):
-            window_size = r - l + 1
-
-            id_r =  ord(s[r]) - ord("A")
-            freq[id_r] += 1
-            max_freq = max(freq)
-
-            while(r-l+1 - max_freq > k):
-                id_l = ord(s[l]) - ord("A")
-                freq[id_l] -= 1
-                l+=1
-            window_size = r - l + 1
-        
-            if window_size > max_window_size:
-                max_window_size = window_size
-
-        return max_window_size
-
-
-
-
-
-
