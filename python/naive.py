@@ -1,47 +1,45 @@
 '''
 
-Given an integer array nums, find the subarray with the largest sum, and return its sum.
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
 
  
 
 Example 1:
 
-Input: nums = [-2,1,-3,4,-1,2,1,-5,4]
-Output: 6
-Explanation: The subarray [4,-1,2,1] has the largest sum 6.
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
 Example 2:
 
-Input: nums = [1]
-Output: 1
-Explanation: The subarray [1] has the largest sum 1.
+Input: nums = [0,1,0,3,2,3]
+Output: 4
 Example 3:
 
-Input: nums = [5,4,-1,7,8]
-Output: 23
-Explanation: The subarray [5,4,-1,7,8] has the largest sum 23.
+Input: nums = [7,7,7,7,7,7,7]
+Output: 1
+ 
 
 '''
 
 
 class Solution:
-    def maxSubArray(self, nums: List[int]) -> int:
-        if len(nums) == 1:
-            return nums[0]
+    def lengthOfLIS(self, nums: List[int]) -> int:
+
+        if not nums:
+            return 0
         
-        rolling_sum = 0
-        max_sum = 0
-
-        for i in range(0,len(nums),1):
-            temp = rolling_sum + nums[i]
-
-            if temp < nums[i]:
-                rolling_sum = nums[i]
-            else:
-                rolling_sum = temp
-
-            
-            if rolling_sum > max_sum:
-                max_sum = rolling_sum
-
+        n = len(nums)
+        if n == 1:
+            return 1
         
-        return max_sum
+        # dp approach
+
+        dp = [1] * n
+
+        for i in range(0,n,1):
+            for j in range(0,i,1):
+                if nums[j] < nums[i]:
+                    dp[i] = max(dp[i],dp[j] + 1)
+        
+
+        return max(dp)
