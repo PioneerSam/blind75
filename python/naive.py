@@ -1,52 +1,54 @@
 '''
-
-You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
-
-Return true if you can reach the last index, or false otherwise.
+Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
 
  
 
 Example 1:
 
-Input: nums = [2,3,1,1,4]
-Output: true
-Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.
+Input: intervals = [[1,3],[2,6],[8,10],[15,18]]
+Output: [[1,6],[8,10],[15,18]]
+Explanation: Since intervals [1,3] and [2,6] overlap, merge them into [1,6].
 Example 2:
 
-Input: nums = [3,2,1,0,4]
-Output: false
-Explanation: You will always arrive at index 3 no matter what. Its maximum jump length is 0, which makes it impossible to reach the last index.
+Input: intervals = [[1,4],[4,5]]
+Output: [[1,5]]
+Explanation: Intervals [1,4] and [4,5] are considered overlapping.
+Example 3:
+
+Input: intervals = [[4,7],[1,4]]
+Output: [[1,7]]
+Explanation: Intervals [1,4] and [4,7] are considered overlapping.
 
 '''
 
 class Solution:
-    def canJump(self, nums: List[int]) -> bool:
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        # I think it is greedy again
+        result = []
+
+        if not intervals:
+            return result
+        # I need to sort the intervals based on end 
+        intervals = sorted(intervals,key = lambda x:x[0])
+        current_min_l = intervals[0][0]
+        current_max_r = intervals[0][1]
+
+        for interval in intervals[1::]:
+            print("current_min_l", current_min_l)
+            print("current max r",current_max_r)
+            current_l = interval[0]
+            current_r = interval[1]
+
+            if current_l <= current_max_r:
+                current_min_l = min(current_min_l,current_l)
+                current_max_r = max(current_max_r,current_r)
+            else:
+                # we need to start another one
+                result.append([current_min_l,current_max_r])
+
+                current_min_l = current_l
+                current_max_r = current_r
         
-        end_idx = len(nums)-1
-        # it is actually a DP....
-        memo = {}
-
-
-        def dfs(idx):
-            if idx >= end_idx:
-                return True
-
-            if idx in memo:
-                return memo[idx]
-
-            maximum_jump = nums[idx]
-
-            if maximum_jump == 0 and idx < end_idx:
-                memo[idx] = False
-                return False
-
-            for jump in range(1,maximum_jump+1,1):
-                if dfs(idx + jump):
-                    memo[idx] = True
-                    return True
-            
-            memo[idx] = False
-            return False
-
-
-        return dfs(0)
+        result.append([current_min_l,current_max_r])
+        return result
+                       
