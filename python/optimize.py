@@ -1,28 +1,51 @@
 '''
-You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's.
 
-Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+You must do it in place.
 
-You may assume that you have an infinite number of each kind of coin.
-
- 
 '''
 
 
+
+
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
-  
-        dp = [float('inf')] * (amount+1)
+    def setZeroes(self, matrix: List[List[int]]) -> None:
+        m = len(matrix)
+        n = len(matrix[0])
 
-        dp[0] = 0
+        first_colum_zeros = False
+        first_row_zeros = False
+        # original zeros
+        for i in range(0,m):
+            if matrix[i][0] ==0:
+                first_colum_zeros = True
+                break
 
-        for i in range(1,len(dp),1):
-            for coin_value in coins:
-                if i - coin_value == 0:
-                    dp[i] = min(dp[i],dp[i-coin_value] + 1)
+        # for rows
+        for j in range(0,n):
+            if matrix[0][j] ==0:
+                first_row_zeros = True
+                break
 
-        if dp[amount] != float('inf'):
-            return dp[amount]
-        else:
-            return 0
+        for i in range(1,m):
+            for j in range(1,n):
+                if matrix[i][j] == 0:
+                    matrix[i][0] = 0
+                    matrix[0][j] = 0
+
+        for i in range(1,m):
+            for j in range(1,n):
+                if matrix[i][0] == 0 or matrix[0][j] == 0:
+                    matrix[i][j] = 0
+
+        # # tackle the first row 
+        if first_row_zeros == True:
+                for j in range(0,n):
+                    matrix[0][j] = 0
+
+        if first_colum_zeros == True:
+                for i in range(0,m):
+                    matrix[i][0] = 0
+                
+        
                 
