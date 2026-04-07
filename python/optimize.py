@@ -1,53 +1,72 @@
 '''
-Given an m x n grid of characters board and a string word, return true if word exists in the grid.
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
 
-The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
-
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return true if you can finish all courses. Otherwise, return false.
 '''
 
 
 
 class Solution:
-    def exist(self, board: List[List[str]], word: str) -> bool:
-        n = len(board)
-        m = len(board[0])
-        d = len(word)
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        graph = [[] for _ in range(numCourses)]
 
-        visited = [[False] * m for _ in range(n)]
+        state = [0 for _ in range(numCourses)]
 
-        def dfs(i,j,idx):
-            if not (0<=i<n and 0<=j<m):
-                return False
-            
-            if visited[i][j]:
-                return False
-            
-            cur_letter = word[idx]
-            if(board[i][j] == cur_letter):
-                if idx == d-1:
-                    return True
-                visited[i][j] = True
-                dir_vec = [(1,0),(0,1),(-1,0),(0,-1)]
-                
-                for dr,dc in dir_vec:
-                    nr = i + dr
-                    nc = j + dc
-                    if (0<=nr<n and 0<=nc<m) and idx + 1 <d:
-                        if dfs(nr,nc,idx+1):
-                            return True
-                visited[i][j] = False    
+        for pre in prerequisites:
+            graph[pre[1]].append(pre[0])
+        
+        # # 1. iterative DFS
+        # # 0 not visited, 1 is visiting, 2 is visited
+        # stack = []
+
+     
+        # # True is entering, False is exiting
+        # for i in range(numCourses):
+        #     if state[i] == 0:
+        #         stack.append((i,True))
+        #         while stack:
+        #             node_idx, flag = stack.pop()
+
+        #             if flag:
+        #                 if state[node_idx] == 1:
+        #                     return False
+        #                 elif state[node_idx] == 2:
+        #                     continue
+        #                 else:
+        #                     state[node_idx] = 1
+        #                     stack.append((node_idx,False))
+        #                     # its neighbours
+        #                     for nei in graph[node_idx]:
+        #                         stack.append((nei,True))            
+        #             else:
+        #                 state[node_idx] = 2
+        
+        # return True
+
+        ## 2. recursive DFS
+        def dfs(node):
+            if state[node] == 1:
+                return True
+            elif state[node] == 2:
                 return False
             else:
+                state[node] = 1
+                for nei in graph[node]:
+                   if dfs(nei):
+                       return True
+                state[node] = 2
                 return False
-         
-        for i in range(n):
-            for j in range(m):
-                ans = dfs(i,j,0)
-                if ans:
-                    return True
-        return False
+                
 
-    
+        for i in range(numCourses):
+            if state[i] == 2:
+                continue
+            ans = dfs(i)
+            if ans:
+                return False
+
+        return True
                 
         
 

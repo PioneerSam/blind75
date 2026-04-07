@@ -1,82 +1,60 @@
 '''
-Given an m x n grid of characters board and a string word, return true if word exists in the grid.
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
 
-The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
-
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return true if you can finish all courses. Otherwise, return false.
 '''
 
 
 
 class Solution:
-    def exist(self, board: List[List[str]], word: str) -> bool:
-        # start any letter and try to dfs 
-        current = ''
-        # do a boolean grid of visted 
-        m = len(board)
-        n = len(board[0])
-        d = len(word)
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        # So [1,0] means in order to take 1 you have to take 0 first 
+        # somehow it is detecting a cycle lol
+        # lets do it naively
 
-        if m ==n and m == 1:
-            return board[m-1][n-1] == word
+        # we need to see how many courses there are
+        # ok we need to create a adjancancy list
 
-   
-        # print(visited)
-        current_idx = 0
-        first_letter = word[current_idx]
+        graph = [[] for _ in range(numCourses)]
+        indegree = [0 for _ in range(numCourses)]
+        taken = 0
 
+        for pre in prerequisites:
+            graph[pre[1]].append(pre[0])
+            indegree[pre[0]] += 1
+
+        print("the adjanency list is:",graph)
+
+        # the indegree array
+        print("the indegree array is:",indegree)
+
+        # remove courses with indegree 0
         from collections import deque
 
-        # Create a deque instance
         q = deque()
-        dir_vec = [(1,0),(0,1),(-1,0),(0,-1)]
 
-        for i in range(m):
-            for j in range(n):
-                visited = [[False] * n for _ in range(m)]
+        for node_idx in range(numCourses):
+            if indegree[node_idx] == 0:
+                q.append(node_idx)
 
-                if board[i][j] == first_letter:
-                    # print("starting expanding at node",(i,j))
-                    if d == 1:
-                        return True
-                    
-                    if current_idx < d:
-                        current_idx = 1
-                    # visited[i][j] = True
-                    q.append((i,j,current_idx,{(i,j)}))
-                
-                while q:
-                    current = q.popleft()
-                    r = current[0]
-                    c = current[1]
-                    current_idx = current[2]
-                    # print("I am at",(r,c))
-                    current_letter = word[current_idx]
-                    # print("matching index word:", current_idx)
-                    # print("matching letter:", current_letter)
-                    path = current[3]
 
-                    for dr,dc in dir_vec:
-                        nr = r + dr
-                        nc = c + dc
+        while q:
+            cur = q.popleft()
+            taken += 1
 
-                        if 0 <= nr < m and 0 <= nc < n:
-                            if (nr,nc) not in path and board[nr][nc] == current_letter:
-                                if current_idx == d-1:
-                                    return True
-                                else:
-                                    next_idx = current_idx + 1
-                                # print("----nr,nc-----",(nr,nc))
-                                new_path = path.copy()
-                                new_path.add((nr,nc))
-                                # visited[nr][nc] = True
-                                q.append((nr,nc,next_idx,new_path))
+            # drop the indegree of its neigbours
+            for node_idx in graph[cur]:
+                indegree[node_idx] -=1
+                if indegree[node_idx] == 0:
+                    q.append(node_idx)
 
-        return False
+        
+        return taken == numCourses
 
-                
-# [["A","B","C","E"],
-#  ["S","F","E","S"],
-#  ["A","D","E","E"]]
-                
+
+            
+
+
 
                        

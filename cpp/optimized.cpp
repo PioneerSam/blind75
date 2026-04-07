@@ -1,61 +1,50 @@
 #include <algorithm>
 #include <vector>
+#include <queue>
 
 
 class Solution {
 public:
-    bool exist(vector<vector<char>>& board, string word) {
-        
-        int n = board.size();
-        int m = board[0].size();
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        // we need to do iterative BFS toposort
+        // we need to build the graph where it is a list of lists
+        vector<vector<int>> graph(numCourses);
+        // indegree list
+        vector<int> indegree(numCourses);
 
-        int d = word.size();
+        int count_taken = 0;
 
+        for(int i = 0; i < prerequisites.size();i++){
+            vector<int> pre = prerequisites[i];
+            graph[pre[1]].push_back(pre[0]);
+            indegree[pre[0]]++;
+        }
+        std::queue<int> q;
 
-
-        function<bool(int,int,int)> dfs = [&](int r, int c, int idx) {
-
-            if (!(0<=r && r< n && 0<=c && c<m)){
-                return false;
-            }
-
-            if(board[r][c] == '#'){
-                return false;
-            }
-
-            
-            if(board[r][c] == word[idx]){
-                if(idx == d-1){
-                    return true;
-                }
-                char temp = board[r][c];
-                board[r][c] = '#';
-                vector<pair<int,int>> dirs = {{1,0},{-1,0},{0,1},{0,-1}};
-
-                for(auto &p:dirs){
-                    int nr = r + p.first;
-                    int nc = c + p.second;
-                    if(idx+1 < d){
-                        if(dfs(nr,nc,idx+1)){
-                            return true;
-                        }
-                    }
-                }
-                board[r][c] = temp;
-                return false;
-            }else{
-                return false;
-            }
-        };
-
-        for(int i=0; i<n;i++){
-            for(int j=0; j<m; j++){
-                bool ans = dfs(i,j,0);
-                if(ans){
-                    return true;
-                }
+        for(int i=0;i<numCourses;i++){
+            if(indegree[i] == 0){
+                q.push(i);
             }
         }
-        return false;
+
+        while(!q.empty()){
+            int node = q.front();
+            q.pop();
+            
+            count_taken++;
+
+            for(int j = 0; j<graph[node].size();j++){
+                int nei = graph[node][j];
+                indegree[nei]--;
+
+                if(indegree[nei] == 0){
+                    q.push(nei);
+                }
+
+            }        
+
+        }
+
+        return count_taken == numCourses; 
     }
 };
