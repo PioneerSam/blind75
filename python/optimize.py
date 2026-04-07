@@ -1,51 +1,57 @@
 '''
-Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's.
+Given an m x n grid of characters board and a string word, return true if word exists in the grid.
 
-You must do it in place.
+The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
 
 '''
 
 
 
-
 class Solution:
-    def setZeroes(self, matrix: List[List[int]]) -> None:
-        m = len(matrix)
-        n = len(matrix[0])
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        n = len(board)
+        m = len(board[0])
+        d = len(word)
 
-        first_colum_zeros = False
-        first_row_zeros = False
-        # original zeros
-        for i in range(0,m):
-            if matrix[i][0] ==0:
-                first_colum_zeros = True
-                break
+        visited = [[False] * m for _ in range(n)]
 
-        # for rows
-        for j in range(0,n):
-            if matrix[0][j] ==0:
-                first_row_zeros = True
-                break
+        def dfs(i,j,idx):
+            if not (0<=i<n and 0<=j<m):
+                return False
+            
+            if visited[i][j]:
+                return False
+            
+            cur_letter = word[idx]
+            if(board[i][j] == cur_letter):
+                if idx == d-1:
+                    return True
+                visited[i][j] = True
+                dir_vec = [(1,0),(0,1),(-1,0),(0,-1)]
+                
+                for dr,dc in dir_vec:
+                    nr = i + dr
+                    nc = j + dc
+                    if (0<=nr<n and 0<=nc<m) and idx + 1 <d:
+                        if dfs(nr,nc,idx+1):
+                            return True
+                visited[i][j] = False    
+                return False
+            else:
+                return False
+         
+        for i in range(n):
+            for j in range(m):
+                ans = dfs(i,j,0)
+                if ans:
+                    return True
+        return False
 
-        for i in range(1,m):
-            for j in range(1,n):
-                if matrix[i][j] == 0:
-                    matrix[i][0] = 0
-                    matrix[0][j] = 0
-
-        for i in range(1,m):
-            for j in range(1,n):
-                if matrix[i][0] == 0 or matrix[0][j] == 0:
-                    matrix[i][j] = 0
-
-        # # tackle the first row 
-        if first_row_zeros == True:
-                for j in range(0,n):
-                    matrix[0][j] = 0
-
-        if first_colum_zeros == True:
-                for i in range(0,m):
-                    matrix[i][0] = 0
+    
                 
         
+
+
+
+                    
                 
