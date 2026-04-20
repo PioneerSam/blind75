@@ -1,82 +1,32 @@
 '''
-Given an m x n grid of characters board and a string word, return true if word exists in the grid.
+Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path.
 
-The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+Note: You can only move either down or right at any point in time.
 
 '''
 
 
 
 class Solution:
-    def exist(self, board: List[List[str]], word: str) -> bool:
-        # start any letter and try to dfs 
-        current = ''
-        # do a boolean grid of visted 
-        m = len(board)
-        n = len(board[0])
-        d = len(word)
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        m = len(grid)
+        n = len(grid[0])
 
-        if m ==n and m == 1:
-            return board[m-1][n-1] == word
+        # create a DP array
+        dp = [[0] * n for _ in range(m)]
+        dp[0][0] = grid[0][0]
+        for i in range(0,m-1):
+            dp[i+1][0] = dp[i][0] + grid[i+1][0]
+        
+        for j in range(0,n-1):
+            dp[0][j+1] = dp[0][j] + grid[0][j+1]
 
-   
-        # print(visited)
-        current_idx = 0
-        first_letter = word[current_idx]
 
-        from collections import deque
+        for i in range(1,m):
+            for j in range(1,n):
+                # go down
+                dp[i][j] = min(dp[i-1][j],dp[i][j-1]) + grid[i][j]
+             
 
-        # Create a deque instance
-        q = deque()
-        dir_vec = [(1,0),(0,1),(-1,0),(0,-1)]
-
-        for i in range(m):
-            for j in range(n):
-                visited = [[False] * n for _ in range(m)]
-
-                if board[i][j] == first_letter:
-                    # print("starting expanding at node",(i,j))
-                    if d == 1:
-                        return True
-                    
-                    if current_idx < d:
-                        current_idx = 1
-                    # visited[i][j] = True
-                    q.append((i,j,current_idx,{(i,j)}))
-                
-                while q:
-                    current = q.popleft()
-                    r = current[0]
-                    c = current[1]
-                    current_idx = current[2]
-                    # print("I am at",(r,c))
-                    current_letter = word[current_idx]
-                    # print("matching index word:", current_idx)
-                    # print("matching letter:", current_letter)
-                    path = current[3]
-
-                    for dr,dc in dir_vec:
-                        nr = r + dr
-                        nc = c + dc
-
-                        if 0 <= nr < m and 0 <= nc < n:
-                            if (nr,nc) not in path and board[nr][nc] == current_letter:
-                                if current_idx == d-1:
-                                    return True
-                                else:
-                                    next_idx = current_idx + 1
-                                # print("----nr,nc-----",(nr,nc))
-                                new_path = path.copy()
-                                new_path.add((nr,nc))
-                                # visited[nr][nc] = True
-                                q.append((nr,nc,next_idx,new_path))
-
-        return False
-
-                
-# [["A","B","C","E"],
-#  ["S","F","E","S"],
-#  ["A","D","E","E"]]
-                
-
-                       
+        return dp[m-1][n-1]
+        
